@@ -27,7 +27,7 @@ extension Color {
 }
 
 struct AppTheme {
-    // Simplified color palette
+    // MARK: - Colors
     static let primaryColor = Color(hex: "4A80F0")    // Blue
     static let secondaryColor = Color(hex: "3CC8AA")  // Teal
     static let accentColor = Color(hex: "F59762")     // Orange
@@ -37,6 +37,8 @@ struct AppTheme {
     static let dangerColor = Color(hex: "FF5252")     // Bright Red
     // Add these lines after your existing color definitions in AppTheme.swift
     static let infoColor = Color(hex: "3182CE")       // Information blue
+      // Information blue
+    
     static let backgroundLight = Color(hex: "F9FAFB")
     static let backgroundMedium = Color(hex: "F3F4F6")
     static let cardShadow: Color = Color.black.opacity(0.05)
@@ -95,24 +97,59 @@ struct AppTheme {
     static let cardMinHeight: CGFloat = 80   // Minimum card height
     static let iconSize: CGFloat = 24        // Standard icon size
     static let largeIconSize: CGFloat = 32   // For emphasis
+=======
+    // Text colors
+    static let textPrimary = Color(hex: "1A1D29")     // Darker for better contrast
+    static let textSecondary = Color(hex: "4A5568")   // Better contrast ratio
+    static let textTertiary = Color(hex: "718096")    // Still readable but subtle
     
-    // Sizing
-    static let cornerRadius: CGFloat = 12
-    static let spacing: CGFloat = 16
+    // MARK: - Typography
+    static let largeTitleFont = Font.system(.largeTitle, design: .rounded).weight(.bold)
+    static let titleFont = Font.system(.title, design: .rounded).weight(.bold)
+    static let title2Font = Font.system(.title2, design: .rounded).weight(.bold)
+    static let title3Font = Font.system(.title3, design: .rounded).weight(.semibold)
+    static let headlineFont = Font.system(.headline, design: .rounded).weight(.semibold)
+    static let subheadlineFont = Font.system(.subheadline, design: .rounded).weight(.medium)
+    static let bodyFont = Font.system(.body, design: .rounded)
+    static let bodyBoldFont = Font.system(.body, design: .rounded).weight(.semibold)
+    static let calloutFont = Font.system(.callout, design: .rounded)
+    static let captionFont = Font.system(.caption, design: .rounded)
+    static let caption2Font = Font.system(.caption2, design: .rounded)
+>>>>>>> 97a798c (Initial commit)
+    
+    // Specialized fonts
+    static let numberFont = Font.system(.title2, design: .monospaced).weight(.bold)
+    static let buttonFont = Font.system(.callout, design: .rounded).weight(.semibold)
+    static let badgeFont = Font.system(.caption, design: .rounded).weight(.bold)
+    
+    // MARK: - Spacing
+    static let microSpacing: CGFloat = 4
     static let smallSpacing: CGFloat = 8
+    static let spacing: CGFloat = 16
+    static let mediumSpacing: CGFloat = 24
+    static let largeSpacing: CGFloat = 32
+    static let xLargeSpacing: CGFloat = 48
     
-    // Shadows
+    // MARK: - Sizing
+    static let minTouchTarget: CGFloat = 44  // iOS HIG minimum
+    static let buttonHeight: CGFloat = 48    // Comfortable for students
+    static let cardMinHeight: CGFloat = 80   // Minimum card height
+    static let iconSize: CGFloat = 24        // Standard icon size
+    static let largeIconSize: CGFloat = 32   // For emphasis
+    static let cornerRadius: CGFloat = 12
+    
+    // MARK: - Shadows
     static let cardShadow: Color = Color.black.opacity(0.05)
     static let shadowRadius: CGFloat = 6
     
-    // Background gradient
+    // MARK: - Gradients
     static let backgroundGradient = LinearGradient(
         gradient: Gradient(colors: [backgroundLight, backgroundMedium]),
         startPoint: .top,
         endPoint: .bottom
     )
     
-    // Empty state helper
+    // MARK: - Helper Methods
     static func emptyState(
         icon: String,
         message: String,
@@ -157,7 +194,7 @@ struct AppTheme {
     }
 }
 
-// Common View Modifiers
+// MARK: - View Modifiers
 extension View {
     func cardStyle() -> some View {
         self

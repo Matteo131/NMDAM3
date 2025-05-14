@@ -107,7 +107,7 @@ class NotificationManager {
     func createNotification(
         title: String,
         body: String,
-        type: NotificationType,
+        type: AppNotificationType,
         relatedItemId: String? = nil,
         recipientId: String
     ) {

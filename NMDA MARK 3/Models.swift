@@ -7,7 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
-import SwiftUI  // This will fix the Color errors
+import SwiftUI
 
 // Model for a Chore
 struct Chore: Identifiable, Codable {
@@ -119,6 +119,7 @@ struct ChoreCompletion: Codable {
     var dueDate: Date
     var onTime: Bool
 }
+
 struct Expense: Identifiable, Codable {
     var id: String?
     var title: String
@@ -137,9 +138,6 @@ struct Expense: Identifiable, Codable {
         return amount / Double(splitAmong.count)
     }
 }
-
-// ========== Models.swift ADDITIONS ==========
-// Add to your existing Models.swift file
 
 // Model for Calendar Event
 struct Event: Identifiable, Codable {
@@ -233,14 +231,14 @@ struct AppNotification: Identifiable, Codable {
     var id: String?
     var title: String
     var body: String
-    var type: NotificationType
+    var type: AppNotificationType
     var relatedItemId: String? // ID of related item (chore, expense, etc.)
     var sentAt: Date
     var isRead: Bool = false
     var recipientId: String // User ID
 }
 
-enum NotificationType: String, Codable {
+enum AppNotificationType: String, Codable {
     case chore = "chore"
     case expense = "expense"
     case grocery = "grocery"
@@ -270,6 +268,7 @@ enum NotificationType: String, Codable {
         }
     }
 }
+
 struct HouseholdMember: Identifiable, Codable {
     var id: String? // User ID
     var displayName: String
@@ -320,6 +319,7 @@ enum InvitationStatus: String, Codable {
     case declined = "Declined"
     case expired = "Expired"
 }
+
 enum ExpenseCategory: String, Codable, CaseIterable {
     case rent = "Rent"
     case utilities = "Utilities"
@@ -362,6 +362,7 @@ enum SplitType: String, Codable, CaseIterable {
     case percentage = "Split by Percentage"
     case custom = "Custom Amounts"
 }
+
 // Add to Models.swift
 struct RoommateActivity: Identifiable {
     var id: String

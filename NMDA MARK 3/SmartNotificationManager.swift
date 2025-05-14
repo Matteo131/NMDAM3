@@ -10,6 +10,20 @@ import UserNotifications
 import Firebase
 import FirebaseAuth
 
+
+
+enum SmartNotificationType: String {
+    case chore, expense, grocery, event, digest, achievement, seasonal
+}
+
+enum NotificationPriority: Int {
+    case low = 1
+    case medium = 2
+    case high = 3
+    case urgent = 4
+}
+
+
 class SmartNotificationManager: ObservableObject {
     static let shared = SmartNotificationManager()
     
@@ -375,7 +389,6 @@ class SmartNotificationManager: ObservableObject {
             "chore_streak": ("You're on fire! 🔥", "3 chores completed this week! Keep up the great work."),
             "bill_splitter": ("Money management pro! 💰", "Thanks for keeping track of expenses. You're making everyone's life easier."),
             "grocery_hero": ("Shopping champion! 🛒", "Your grocery contributions keep the household running smoothly."),
-            "event_planner": ("Social coordinator! 🎊", "Thanks for keeping everyone connected with great events.")
         ]
         
         if let (title, body) = achievements[achievement] {
@@ -540,7 +553,9 @@ class SmartNotificationManager: ObservableObject {
     }
     
     func shouldSendNotification(
+
         type: NotificationType,
+
         priority: NotificationPriority,
         timeSinceLastNotification: TimeInterval
     ) -> Bool {
@@ -627,6 +642,7 @@ class SmartNotificationManager: ObservableObject {
     }
 }
 
+
 // MARK: - Supporting Enums
 
 enum NotificationType: String {
@@ -638,4 +654,3 @@ enum NotificationPriority: Int {
     case medium = 2
     case high = 3
     case urgent = 4
-}

@@ -10,7 +10,7 @@ struct EnhancedGroceryView: View {
     @State private var searchText = ""
     @State private var showCompletedItems = false
     
-    // Grocery categories with colors and icons
+
     let categories = [
             GroceryCategory(name: "Fruits & Vegetables", color: AppTheme.successColor, icon: "leaf.fill"),
             GroceryCategory(name: "Dairy & Eggs", color: AppTheme.primaryColor, icon: "cup.and.saucer.fill"),
@@ -22,6 +22,7 @@ struct EnhancedGroceryView: View {
             GroceryCategory(name: "Beverages", color: Color.blue, icon: "drop.fill"),
             GroceryCategory(name: "Household", color: Color.gray, icon: "house.fill")
         ]
+
     
     var body: some View {
         ScrollView {
@@ -192,14 +193,16 @@ struct EnhancedGroceryView: View {
         }
         .background(AppTheme.backgroundLight.ignoresSafeArea())
         .navigationTitle("Grocery")
-        .navigationBarItems(trailing:
-            Toggle(isOn: $showCompletedItems) {
-                Text("Show Completed")
-                    .font(AppTheme.captionFont)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Toggle(isOn: $showCompletedItems) {
+                    Text("Show Completed")
+                        .font(AppTheme.captionFont)
+                }
+                .toggleStyle(SwitchToggleStyle(tint: AppTheme.primaryColor))
+                .labelsHidden()
             }
-            .toggleStyle(SwitchToggleStyle(tint: AppTheme.primaryColor))
-            .labelsHidden()
-        )
+        }
         .onAppear {
             viewModel.fetchGroceryItems(householdId: householdId)
         }
@@ -583,7 +586,7 @@ struct CategoryGroceryView: View {
                                         .padding()
                                         .frame(maxWidth: .infinity)
                                         .background(addedItems[item] == true ?
-                                                    Color(hex: "F2FFF2") :
+                                                    Color(red: 0.95, green: 1.0, blue: 0.95) :
                                                     Color.white)
                                         .foregroundColor(AppTheme.textPrimary)
                                         .cornerRadius(AppTheme.cornerRadius)
@@ -615,9 +618,13 @@ struct CategoryGroceryView: View {
             .padding(.top)
             .background(AppTheme.backgroundLight.ignoresSafeArea())
             .navigationTitle(category)
-            .navigationBarItems(trailing: Button("Done") {
-                dismiss()
-            })
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
         }
     }
     

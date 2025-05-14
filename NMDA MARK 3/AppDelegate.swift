@@ -14,6 +14,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
         // Add push notification setup
         setupPushNotifications()
         
+        // Schedule smart notifications
+        SmartNotificationManager.shared.scheduleSmartNotifications(for: "default")
+        
         return true
     }
     
