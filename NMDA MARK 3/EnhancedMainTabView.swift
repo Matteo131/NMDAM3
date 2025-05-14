@@ -50,6 +50,7 @@ struct EnhancedMainTabView: View {
             firestoreViewModel.fetchHousehold(householdId: householdId)
             firestoreViewModel.fetchEvents(householdId: householdId)
             firestoreViewModel.fetchExpenses(householdId: householdId)
+            SmartNotificationManager.shared.scheduleSmartNotifications(for: householdId)
         }
     }
 }

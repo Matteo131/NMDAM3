@@ -35,22 +35,66 @@ struct AppTheme {
     static let successColor = Color(hex: "4CD964")    // Green
     static let warningColor = Color(hex: "FAD02C")    // Yellow
     static let dangerColor = Color(hex: "FF5252")     // Bright Red
-    
-    // Background colors
+    // Add these lines after your existing color definitions in AppTheme.swift
+    static let infoColor = Color(hex: "3182CE")       // Information blue
     static let backgroundLight = Color(hex: "F9FAFB")
     static let backgroundMedium = Color(hex: "F3F4F6")
+    static let cardShadow: Color = Color.black.opacity(0.05)
+    static let shadowRadius: CGFloat = 6
     
-    // Text colors
-    static let textPrimary = Color(hex: "121826")     // Near black
-    static let textSecondary = Color(hex: "646E82")   // Medium gray
-    static let textTertiary = Color(hex: "9AA4B8")    // Light gray
+    // Typography with better hierarchy for student users
+    static let largeTitleFont = Font.system(.largeTitle, design: .rounded).weight(.bold)
+    static let titleFont = Font.system(.title, design: .rounded).weight(.bold)
+    static let title2Font = Font.system(.title2, design: .rounded).weight(.bold)
+    static let title3Font = Font.system(.title3, design: .rounded).weight(.semibold)
     
-    // Fonts
-    static let titleFont = Font.system(.title3, design: .rounded).bold()
-    static let headlineFont = Font.system(.headline, design: .rounded)
-    static let subheadlineFont = Font.system(.subheadline, design: .rounded)
+    // Add these to your AppTheme struct if they're missing:
+    static let bodyBoldFont = Font.system(.body, design: .rounded).weight(.semibold)
+    static let badgeFont = Font.system(.caption, design: .rounded).weight(.bold)
+    static let numberFont = Font.system(.title2, design: .monospaced).weight(.bold)
+
+    // Enhanced spacing system
+    static let smallSpacing: CGFloat = 8
+    static let spacing: CGFloat = 16
+    static let cornerRadius: CGFloat = 12
+
+    static let headlineFont = Font.system(.headline, design: .rounded).weight(.semibold)
+    static let subheadlineFont = Font.system(.subheadline, design: .rounded).weight(.medium)
     static let bodyFont = Font.system(.body, design: .rounded)
+    static let calloutFont = Font.system(.callout, design: .rounded)
     static let captionFont = Font.system(.caption, design: .rounded)
+    static let caption2Font = Font.system(.caption2, design: .rounded)
+
+    // Specialized fonts for specific use cases
+    static let numberFont = Font.system(.title2, design: .monospaced).weight(.bold) // For prices, counts
+    static let buttonFont = Font.system(.callout, design: .rounded).weight(.semibold)
+    static let badgeFont = Font.system(.caption, design: .rounded).weight(.bold)
+
+    // Enhanced color contrast for better readability
+    static let textPrimary = Color(hex: "1A1D29")     // Darker for better contrast
+    static let textSecondary = Color(hex: "4A5568")   // Better contrast ratio
+    static let textTertiary = Color(hex: "718096")    // Still readable but subtle
+
+    // Status colors with better contrast
+    static let successColor = Color(hex: "38A169")    // Darker green for better readability
+    static let warningColor = Color(hex: "D69E2E")    // Better contrast yellow
+    static let errorColor = Color(hex: "E53E3E")      // Slightly darker red
+    static let infoColor = Color(hex: "3182CE")       // Information blue
+
+    // Enhanced spacing system for mobile-first design
+    static let microSpacing: CGFloat = 4
+    static let smallSpacing: CGFloat = 8
+    static let spacing: CGFloat = 16
+    static let mediumSpacing: CGFloat = 24
+    static let largeSpacing: CGFloat = 32
+    static let xLargeSpacing: CGFloat = 48
+
+    // Touch-friendly sizing
+    static let minTouchTarget: CGFloat = 44  // iOS HIG minimum
+    static let buttonHeight: CGFloat = 48    // Comfortable for students
+    static let cardMinHeight: CGFloat = 80   // Minimum card height
+    static let iconSize: CGFloat = 24        // Standard icon size
+    static let largeIconSize: CGFloat = 32   // For emphasis
     
     // Sizing
     static let cornerRadius: CGFloat = 12

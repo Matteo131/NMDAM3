@@ -13,32 +13,72 @@ struct DashboardView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: AppTheme.spacing) {
-                // Household header
-                // Add this to the top section of DashboardView where you have the household header
+                // Enhanced household header with key metrics
                 if let household = viewModel.household {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Welcome to")
-                                .font(AppTheme.captionFont)
-                                .foregroundColor(AppTheme.textSecondary)
+                    VStack(spacing: 16) {
+                        // Main header
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Welcome back!")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(AppTheme.textSecondary)
+                                
+                                Text(household.name)
+                                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                                    .foregroundColor(AppTheme.textPrimary)
+                            }
                             
-                            Text(household.name)
-                                .font(AppTheme.titleFont)
-                                .foregroundColor(AppTheme.textPrimary)
+                            Spacer()
+                            
+                            // Profile with quick stats overlay
+                            NavigationLink(destination: ProfileView()) {
+                                ZStack {
+                                    Circle()
+                                        .fill(AppTheme.primaryColor.opacity(0.1))
+                                        .frame(width: 48, height: 48)
+                                    
+                                    Text(String(Auth.auth().currentUser?.displayName?.prefix(1) ?? "U"))
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundColor(AppTheme.primaryColor)
+                                    
+                                    // Notification badge if there are pending items
+                                    if pendingItemsCount > 0 {
+                                        Circle()
+                                            .fill(AppTheme.errorColor)
+                                            .frame(width: 20, height: 20)
+                                            .overlay(
+                                                Text("\(min(pendingItemsCount, 9))")
+                                                    .font(.system(size: 12, weight: .bold))
+                                                    .foregroundColor(.white)
+                                            )
+                                            .offset(x: 18, y: -18)
+                                    }
+                                }
+                            }
                         }
                         
-                        Spacer()
-                        
-                        // Add Profile Navigation Link
-                        NavigationLink(destination: ProfileView()) {
-                            ZStack {
-                                Circle()
-                                    .fill(AppTheme.primaryColor.opacity(0.1))
-                                    .frame(width: 40, height: 40)
+                        // Key metrics row - shows urgent info at a glance
+                        if !viewModel.chores.isEmpty || !viewModel.expenses.isEmpty {
+                            HStack(spacing: 20) {
+                                // Urgent chores
+                                if urgentChoresCount > 0 {
+                                    MetricBadge(
+                                        icon: "exclamationmark.circle.fill",
+                                        title: "\(urgentChoresCount) due today",
+                                        color: AppTheme.errorColor
+                                    )
+                                }
                                 
-                                Text(String(Auth.auth().currentUser?.displayName?.prefix(1) ?? "U"))
-                                    .font(.system(size: 16, weight: .semibold))
-                                    .foregroundColor(AppTheme.primaryColor)
+                                // Money owed/owing
+                                if yourBalance != 0 {
+                                    MetricBadge(
+                                        icon: yourBalance > 0 ? "arrow.down.circle.fill" : "arrow.up.circle.fill",
+                                        title: yourBalance > 0 ? "£\(abs(yourBalance), specifier: "%.0f") owed to you" : "You owe £\(abs(yourBalance), specifier: "%.0f")",
+                                        color: yourBalance > 0 ? AppTheme.successColor : AppTheme.warningColor
+                                    )
+                                }
+                                
+                                Spacer()
                             }
                         }
                     }
@@ -49,8 +89,73 @@ struct DashboardView: View {
                     .padding(.horizontal)
                 }
                 
-                // Quick action buttons
-                quickActionButtons
+                // Enhanced quick action buttons with better visual hierarchy
+                VStack(alignment: .leading, spacing: AppTheme.smallSpacing) {
+                    Text("Quick Actions")
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .foregroundColor(AppTheme.textPrimary)
+                        .padding(.horizontal)
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: AppTheme.spacing) {
+                            // Smart action suggestions based on context
+                            if Calendar.current.component(.hour, from: Date()) < 12 && !viewModel.chores.filter({ !$0.isCompleted && Calendar.current.isDateInToday($0.dueDate) }).isEmpty {
+                                smartActionButton(
+                                    title: "Today's Chores",
+                                    subtitle: "\(todayChoresCount) pending",
+                                    icon: "checkmark.circle.fill",
+                                    color: AppTheme.primaryColor
+                                ) {
+                                    // Navigate to chores
+                                }
+                            } else {
+                                actionButton(
+                                    title: "Add Chore",
+                                    icon: "checkmark.circle.fill",
+                                    color: AppTheme.primaryColor
+                                ) {
+                                    showingAddChore = true
+                                }
+                            }
+                            
+                            if isWeekend {
+                                smartActionButton(
+                                    title: "Grocery Run",
+                                    subtitle: "\(groceryItemsCount) items",
+                                    icon: "cart.fill",
+                                    color: AppTheme.secondaryColor
+                                ) {
+                                    // Navigate to grocery list
+                                }
+                            } else {
+                                actionButton(
+                                    title: "Add Grocery",
+                                    icon: "cart.fill",
+                                    color: AppTheme.secondaryColor
+                                ) {
+                                    showingAddGrocery = true
+                                }
+                            }
+                            
+                            actionButton(
+                                title: "Add Event",
+                                icon: "calendar",
+                                color: AppTheme.accentColor
+                            ) {
+                                showingAddEvent = true
+                            }
+                            
+                            actionButton(
+                                title: "Add Expense",
+                                icon: "dollarsign.circle.fill",
+                                color: AppTheme.errorColor
+                            ) {
+                                showingAddExpense = true
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
                 
                 // Upcoming tasks
                 upcomingTasksSection
@@ -80,50 +185,53 @@ struct DashboardView: View {
         }
     }
     
-    private var quickActionButtons: some View {
-        VStack(alignment: .leading, spacing: AppTheme.smallSpacing) {
-            Text("Quick Actions")
-                .font(AppTheme.headlineFont)
-                .foregroundColor(AppTheme.textPrimary)
-                .padding(.horizontal)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: AppTheme.spacing) {
-                    actionButton(
-                        title: "Add Chore",
-                        icon: "checkmark.circle.fill",
-                        color: AppTheme.primaryColor
-                    ) {
-                        showingAddChore = true
-                    }
-                    
-                    actionButton(
-                        title: "Add Grocery",
-                        icon: "cart.fill",
-                        color: AppTheme.secondaryColor
-                    ) {
-                        showingAddGrocery = true
-                    }
-                    
-                    actionButton(
-                        title: "Add Event",
-                        icon: "calendar",
-                        color: AppTheme.accentColor
-                    ) {
-                        showingAddEvent = true
-                    }
-                    
-                    actionButton(
-                        title: "Add Expense",
-                        icon: "dollarsign.circle.fill",
-                        color: AppTheme.errorColor
-                    ) {
-                        showingAddExpense = true
+    // MARK: - Computed Properties
+    
+    private var pendingItemsCount: Int {
+        let overdueChores = viewModel.chores.filter { !$0.isCompleted && $0.dueDate < Date() }.count
+        let unsettledExpenses = viewModel.expenses.filter { !$0.settled.values.allSatisfy { $0 } }.count
+        return overdueChores + unsettledExpenses
+    }
+    
+    private var urgentChoresCount: Int {
+        viewModel.chores.filter { !$0.isCompleted && Calendar.current.isDateInToday($0.dueDate) }.count
+    }
+    
+    private var todayChoresCount: Int {
+        viewModel.chores.filter { !$0.isCompleted && Calendar.current.isDateInToday($0.dueDate) }.count
+    }
+    
+    private var groceryItemsCount: Int {
+        viewModel.groceryItems.filter { !$0.isCompleted }.count
+    }
+    
+    private var yourBalance: Double {
+        guard let userId = Auth.auth().currentUser?.uid else { return 0 }
+        
+        var balance: Double = 0
+        
+        for expense in viewModel.expenses {
+            if expense.paidBy == userId {
+                // Add what others owe you
+                for person in expense.splitAmong where person != userId {
+                    if let settled = expense.settled[person], !settled {
+                        balance += expense.amountPerPerson
                     }
                 }
-                .padding(.horizontal)
+            } else if expense.splitAmong.contains(userId) {
+                // Subtract what you owe
+                if let settled = expense.settled[userId], !settled {
+                    balance -= expense.amountPerPerson
+                }
             }
         }
+        
+        return balance
+    }
+    
+    private var isWeekend: Bool {
+        let weekday = Calendar.current.component(.weekday, from: Date())
+        return weekday == 1 || weekday == 7
     }
     
     private var upcomingTasksSection: some View {
@@ -182,7 +290,7 @@ struct DashboardView: View {
         }
     }
     
-    // Helper Views
+    // MARK: - Helper Views
     
     private func actionButton(title: String, icon: String, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
@@ -200,6 +308,37 @@ struct DashboardView: View {
             .cornerRadius(AppTheme.cornerRadius)
             .shadow(color: AppTheme.cardShadow, radius: AppTheme.shadowRadius, x: 0, y: 2)
         }
+    }
+    
+    private func smartActionButton(title: String, subtitle: String, icon: String, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(color)
+                
+                Text(title)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(AppTheme.textPrimary)
+                    .lineLimit(1)
+                
+                Text(subtitle)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(color)
+                    .lineLimit(1)
+            }
+            .frame(width: 110, height: 90)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(color.opacity(0.2), lineWidth: 1.5)
+                    )
+            )
+            .shadow(color: AppTheme.cardShadow, radius: 4, x: 0, y: 2)
+        }
+        .buttonStyle(PlainButtonStyle())
     }
     
     private func emptyStateView(message: String, icon: String) -> some View {
@@ -304,7 +443,8 @@ struct DashboardView: View {
         .shadow(color: AppTheme.cardShadow, radius: AppTheme.shadowRadius, x: 0, y: 2)
     }
     
-    // Helper Functions
+    // MARK: - Helper Functions
+    
     private func loadData() {
         viewModel.fetchHousehold(householdId: householdId)
         viewModel.fetchChores(householdId: householdId)
@@ -343,5 +483,29 @@ struct DashboardView: View {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .short
         return formatter.localizedString(for: date, relativeTo: Date())
+    }
+}
+
+// MARK: - MetricBadge Component
+
+struct MetricBadge: View {
+    let icon: String
+    let title: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundColor(color)
+            
+            Text(title)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(color)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(color.opacity(0.1))
+        .cornerRadius(8)
     }
 }

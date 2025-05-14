@@ -12,16 +12,16 @@ struct EnhancedGroceryView: View {
     
     // Grocery categories with colors and icons
     let categories = [
-        GroceryCategory(name: "Fruits & Vegetables", color: Color(hex: "4CD964"), icon: "leaf.fill"),
-        GroceryCategory(name: "Dairy & Eggs", color: Color(hex: "54C7FC"), icon: "cup.and.saucer.fill"),
-        GroceryCategory(name: "Meat & Seafood", color: Color(hex: "FF2D55"), icon: "fish.fill"),
-        GroceryCategory(name: "Bakery", color: Color(hex: "FF9500"), icon: "birthday.cake.fill"),
-        GroceryCategory(name: "Pantry", color: Color(hex: "FFCC00"), icon: "shippingbox.fill"),
-        GroceryCategory(name: "Frozen", color: Color(hex: "5856D6"), icon: "snow"),
-        GroceryCategory(name: "Snacks", color: Color(hex: "FF3B30"), icon: "popcorn.fill"),
-        GroceryCategory(name: "Beverages", color: Color(hex: "007AFF"), icon: "drop.fill"),
-        GroceryCategory(name: "Household", color: Color(hex: "8E8E93"), icon: "house.fill")
-    ]
+            GroceryCategory(name: "Fruits & Vegetables", color: AppTheme.successColor, icon: "leaf.fill"),
+            GroceryCategory(name: "Dairy & Eggs", color: AppTheme.primaryColor, icon: "cup.and.saucer.fill"),
+            GroceryCategory(name: "Meat & Seafood", color: AppTheme.errorColor, icon: "fish.fill"),
+            GroceryCategory(name: "Bakery", color: AppTheme.accentColor, icon: "birthday.cake.fill"),
+            GroceryCategory(name: "Pantry", color: AppTheme.warningColor, icon: "shippingbox.fill"),
+            GroceryCategory(name: "Frozen", color: AppTheme.infoColor, icon: "snow"),
+            GroceryCategory(name: "Snacks", color: Color.red, icon: "popcorn.fill"),
+            GroceryCategory(name: "Beverages", color: Color.blue, icon: "drop.fill"),
+            GroceryCategory(name: "Household", color: Color.gray, icon: "house.fill")
+        ]
     
     var body: some View {
         ScrollView {
@@ -39,6 +39,104 @@ struct EnhancedGroceryView: View {
                 .cornerRadius(AppTheme.cornerRadius)
                 .shadow(color: AppTheme.cardShadow, radius: 3, x: 0, y: 1)
                 .padding(.horizontal)
+                
+                // Quick templates for common student shopping trips
+                if viewModel.groceryItems.filter({ !$0.isCompleted }).count < 3 {
+                    VStack(alignment: .leading, spacing: AppTheme.spacing) {
+                        HStack {
+                            Text("Quick Add")
+                                .font(AppTheme.headlineFont)
+                                .foregroundColor(AppTheme.textPrimary)
+                            
+                            Spacer()
+                            
+                            Text("Common student essentials")
+                                .font(AppTheme.captionFont)
+                                .foregroundColor(AppTheme.textSecondary)
+                        }
+                        .padding(.horizontal)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                QuickAddTemplate(
+                                    title: "Basic Essentials",
+                                    items: ["Milk", "Bread", "Eggs", "Pasta", "Rice"],
+                                    icon: "basket.fill",
+                                    color: AppTheme.primaryColor
+                                ) { items in
+                                    addMultipleItems(items, category: "Pantry")
+                                }
+                                
+                                QuickAddTemplate(
+                                    title: "Quick Meals",
+                                    items: ["Instant Noodles", "Cereal", "Frozen Pizza", "Sandwich Bread", "Peanut Butter"],
+                                    icon: "clock.fill",
+                                    color: AppTheme.accentColor
+                                ) { items in
+                                    addMultipleItems(items, category: "Quick Meals")
+                                }
+                                
+                                QuickAddTemplate(
+                                    title: "Healthy Snacks",
+                                    items: ["Bananas", "Apples", "Yogurt", "Nuts", "Carrots"],
+                                    icon: "heart.fill",
+                                    color: AppTheme.successColor
+                                ) { items in
+                                    addMultipleItems(items, category: "Produce")
+                                }
+                                
+                                QuickAddTemplate(
+                                    title: "Study Night",
+                                    items: ["Coffee", "Energy Drinks", "Chocolate", "Crackers", "Fruit"],
+                                    icon: "book.fill",
+                                    color: AppTheme.warningColor
+                                ) { items in
+                                    addMultipleItems(items, category: "Beverages")
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                    }
+                    .padding(.vertical)
+                }
+                
+                // Smart suggestions based on time and context
+                if shouldShowSmartSuggestions {
+                    VStack(alignment: .leading, spacing: AppTheme.smallSpacing) {
+                        HStack {
+                            Image(systemName: "lightbulb.fill")
+                                .font(.system(size: 16))
+                                .foregroundColor(AppTheme.warningColor)
+                            
+                            Text(smartSuggestionTitle)
+                                .font(AppTheme.subheadlineFont)
+                                .foregroundColor(AppTheme.textPrimary)
+                            
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(smartSuggestions, id: \.self) { item in
+                                    Button(action: {
+                                        addSingleItem(item)
+                                    }) {
+                                        Text(item)
+                                            .font(AppTheme.captionFont)
+                                            .foregroundColor(AppTheme.primaryColor)
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 6)
+                                            .background(AppTheme.primaryColor.opacity(0.1))
+                                            .cornerRadius(16)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                    }
+                    .padding(.bottom)
+                }
                 
                 // Main grocery list
                 VStack(alignment: .leading, spacing: AppTheme.spacing) {
@@ -198,14 +296,51 @@ struct EnhancedGroceryView: View {
             
             // Category name
             Text(category.name)
-                .font(AppTheme.subheadlineFont.bold())
+                .font(AppTheme.subheadlineFont)
+                .bold()
                 .foregroundColor(.white)
                 .padding()
         }
         .shadow(color: category.color.opacity(0.3), radius: 5, x: 0, y: 2)
     }
     
-    // MARK: - Helper methods
+    // MARK: - Computed Properties
+    
+    private var shouldShowSmartSuggestions: Bool {
+        let hour = Calendar.current.component(.hour, from: Date())
+        let weekday = Calendar.current.component(.weekday, from: Date())
+        
+        // Show suggestions during typical shopping times
+        return (hour >= 10 && hour <= 20) || (weekday == 1 || weekday == 7) // Weekend or daytime
+    }
+    
+    private var smartSuggestionTitle: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        let weekday = Calendar.current.component(.weekday, from: Date())
+        
+        if weekday == 1 || weekday == 7 {
+            return "Weekend Shopping Suggestions"
+        } else if hour >= 17 {
+            return "Evening Essentials"
+        } else {
+            return "Popular Items"
+        }
+    }
+    
+    private var smartSuggestions: [String] {
+        let hour = Calendar.current.component(.hour, from: Date())
+        let weekday = Calendar.current.component(.weekday, from: Date())
+        
+        if weekday == 1 || weekday == 7 {
+            return ["Breakfast items", "Laundry detergent", "Toilet paper", "Fresh fruit"]
+        } else if hour >= 17 {
+            return ["Dinner ingredients", "Snacks", "Drinks", "Ice cream"]
+        } else if hour <= 11 {
+            return ["Coffee", "Breakfast cereal", "Milk", "Juice"]
+        } else {
+            return ["Lunch items", "Water", "Energy bars", "Fresh vegetables"]
+        }
+    }
     
     private var filteredGroceryItems: [GroceryItem] {
         var items = viewModel.groceryItems
@@ -224,6 +359,35 @@ struct EnhancedGroceryView: View {
         return items
     }
     
+    // MARK: - Helper Methods
+    
+    private func addMultipleItems(_ items: [String], category: String) {
+        for item in items {
+            viewModel.addGroceryItem(
+                householdId: householdId,
+                name: item,
+                category: category
+            ) { success, _ in
+                // Handle success/error if needed
+            }
+        }
+        
+        // Show success feedback
+        withAnimation {
+            // You could add a success banner here
+        }
+    }
+    
+    private func addSingleItem(_ item: String) {
+        viewModel.addGroceryItem(
+            householdId: householdId,
+            name: item,
+            category: "Quick Add"
+        ) { success, _ in
+            // Handle success/error if needed
+        }
+    }
+    
     private func formatDate(_ date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
@@ -238,6 +402,100 @@ struct GroceryCategory: Identifiable {
     let name: String
     let color: Color
     let icon: String
+}
+
+struct QuickAddTemplate: View {
+    let title: String
+    let items: [String]
+    let icon: String
+    let color: Color
+    let onAdd: ([String]) -> Void
+    
+    @State private var isExpanded = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Header
+            HStack(spacing: 8) {
+                Image(systemName: icon)
+                    .font(.system(size: 16))
+                    .foregroundColor(color)
+                
+                Text(title)
+                    .font(AppTheme.captionFont.bold())
+                    .foregroundColor(AppTheme.textPrimary)
+                
+                Spacer()
+                
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isExpanded.toggle()
+                    }
+                }) {
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 12))
+                        .foregroundColor(AppTheme.textSecondary)
+                        .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                }
+            }
+            
+            // Items preview or full list
+            if isExpanded {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(items, id: \.self) { item in
+                        Text("• \(item)")
+                            .font(.system(size: 12))
+                            .foregroundColor(AppTheme.textSecondary)
+                    }
+                }
+                .padding(.leading, 4)
+                
+                Button(action: {
+                    onAdd(items)
+                    withAnimation {
+                        isExpanded = false
+                    }
+                }) {
+                    Text("Add All (\(items.count))")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(color)
+                        .cornerRadius(6)
+                }
+                .padding(.top, 4)
+            } else {
+                Text("\(items.count) items")
+                    .font(.system(size: 11))
+                    .foregroundColor(AppTheme.textTertiary)
+                
+                Button(action: {
+                    onAdd(items)
+                }) {
+                    Text("Quick Add")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(color)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(color.opacity(0.1))
+                        .cornerRadius(6)
+                }
+                .padding(.top, 4)
+            }
+        }
+        .frame(width: 140)
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(color.opacity(0.2), lineWidth: 1)
+                )
+        )
+        .shadow(color: AppTheme.cardShadow, radius: 4, x: 0, y: 2)
+    }
 }
 
 struct CategoryGroceryView: View {
