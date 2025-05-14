@@ -2,7 +2,7 @@
 import Foundation
 import Firebase
 import FirebaseFirestore
-import FirebaseFunctions  // Add this import
+import FirebaseFunctions
 import UserNotifications
 
 class NotificationService {
