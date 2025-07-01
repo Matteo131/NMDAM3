@@ -1,10 +1,3 @@
-//
-//  EventListView.swift
-//  NMDA MARK 3
-//
-//  Created by Matteo Ricci on 02/05/2025.
-//
-
 import SwiftUI
 
 struct EventsListView: View {

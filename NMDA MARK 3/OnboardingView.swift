@@ -19,11 +19,18 @@ struct OnboardingView: View {
             subtitle: "Split bills fairly, automatically",
             description: "Track who paid for what and settle up easily. Remove the stress from shared expenses and focus on what matters.",
             icon: "dollarsign.circle.fill",
-
             color: AppTheme.successColor,
-
-            color: AppTheme.secondaryColor,
-
+            benefits: ["✓ Fair expense splitting", "✓ Track payments easily", "✓ No more awkward conversations"]
+        ),
+        OnboardingPage(
+            title: "Stay Organized Together",
+            subtitle: "Coordination made simple",
+            description: "Share calendars, coordinate schedules, and keep everyone in the loop. Perfect for busy student households.",
+            icon: "calendar.badge.plus",
+            color: AppTheme.accentColor,
+            benefits: ["✓ Shared household calendar", "✓ Event coordination", "✓ Never double-book again"]
+        )
+    ]
     
     var body: some View {
         ZStack {

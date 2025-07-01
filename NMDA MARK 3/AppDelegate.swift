@@ -1,4 +1,3 @@
-// In AppDelegate.swift
 import UIKit
 import Firebase
 import FirebaseMessaging
@@ -7,7 +6,6 @@ import FirebaseAuth
 
 class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNotificationCenterDelegate {
     
-    SmartNotificationManager.shared.scheduleSmartNotifications(for: "default")
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         FirebaseApp.configure()
         
